@@ -1,14 +1,82 @@
 [
-  { "id": "cvpr2027", "name": "CVPR", "fullName": "Conference on Computer Vision and Pattern Recognition", "area": "Computer Vision", "location": "TBA", "deadline": "2026-11-21T23:59:59Z", "startDate": "2027-06-14T00:00:00Z", "website": "https://cvpr.thecvf.com" },
-  { "id": "iclr2027", "name": "ICLR", "fullName": "International Conference on Learning Representations", "area": "Machine Learning", "location": "TBA", "deadline": "2026-09-26T23:59:59Z", "startDate": "2027-04-26T00:00:00Z", "website": "https://iclr.cc" },
-  { "id": "chi2027", "name": "CHI", "fullName": "ACM Conference on Human Factors in Computing Systems", "area": "Human-Computer Interaction", "location": "TBA", "deadline": "2026-09-10T23:59:59Z", "startDate": "2027-05-10T00:00:00Z", "website": "https://chi.acm.org" },
-  { "id": "ijcai2027", "name": "IJCAI", "fullName": "International Joint Conference on Artificial Intelligence", "area": "Artificial Intelligence", "location": "TBA", "deadline": "2027-01-18T23:59:59Z", "startDate": "2027-08-16T00:00:00Z", "website": "https://www.ijcai.org" },
-  { "id": "siggraph2027", "name": "SIGGRAPH", "fullName": "ACM SIGGRAPH Conference", "area": "Computer Graphics", "location": "TBA", "deadline": "2027-01-21T23:59:59Z", "startDate": "2027-07-25T00:00:00Z", "website": "https://www.siggraph.org" },
-  { "id": "icml2027", "name": "ICML", "fullName": "International Conference on Machine Learning", "area": "Machine Learning", "location": "TBA", "deadline": "2027-01-29T23:59:59Z", "startDate": "2027-07-12T00:00:00Z", "website": "https://icml.cc" },
-  { "id": "kdd2027", "name": "KDD", "fullName": "ACM SIGKDD Conference on Knowledge Discovery and Data Mining", "area": "Data Mining", "location": "TBA", "deadline": "2027-02-08T23:59:59Z", "startDate": "2027-08-09T00:00:00Z", "website": "https://kdd.org" },
-  { "id": "acl2027", "name": "ACL", "fullName": "Annual Meeting of the Association for Computational Linguistics", "area": "Natural Language Processing", "location": "TBA", "deadline": "2027-02-15T23:59:59Z", "startDate": "2027-07-26T00:00:00Z", "website": "https://www.aclweb.org" },
-  { "id": "miccai2027", "name": "MICCAI", "fullName": "Medical Image Computing and Computer Assisted Intervention", "area": "Medical Imaging", "location": "TBA", "deadline": "2027-03-01T23:59:59Z", "startDate": "2027-09-27T00:00:00Z", "website": "https://miccai.org" },
-  { "id": "iccv2027", "name": "ICCV", "fullName": "International Conference on Computer Vision", "area": "Computer Vision", "location": "TBA", "deadline": "2027-03-07T23:59:59Z", "startDate": "2027-10-18T00:00:00Z", "website": "https://iccv.thecvf.com" },
-  { "id": "neurips2027", "name": "NeurIPS", "fullName": "Conference on Neural Information Processing Systems", "area": "Machine Learning", "location": "TBA", "deadline": "2027-05-14T23:59:59Z", "startDate": "2027-12-06T00:00:00Z", "website": "https://neurips.cc" },
-  { "id": "emnlp2027", "name": "EMNLP", "fullName": "Conference on Empirical Methods in Natural Language Processing", "area": "Natural Language Processing", "location": "TBA", "deadline": "2027-05-21T23:59:59Z", "startDate": "2027-11-08T00:00:00Z", "website": "https://www.aclweb.org" }
+  {
+    "name": "AAAI",
+    "fullName": "AAAI Conference on Artificial Intelligence",
+    "area": "ML",
+    "deadline": "2026-08-01T23:59:59-12:00",
+    "location": "TBA",
+    "website": "https://aaai.org"
+  },
+  {
+    "name": "ICRA",
+    "fullName": "IEEE International Conference on Robotics and Automation",
+    "area": "Robotics",
+    "deadline": "2026-09-15T23:59:59-07:00",
+    "location": "TBA",
+    "website": "https://www.ieee-ras.org/conferences-workshops/fully-sponsored/icra"
+  },
+  {
+    "name": "ICLR",
+    "fullName": "International Conference on Learning Representations",
+    "area": "ML",
+    "deadline": "2026-09-24T23:59:59-12:00",
+    "location": "TBA",
+    "website": "https://iclr.cc"
+  },
+  {
+    "name": "MLSys",
+    "fullName": "Conference on Machine Learning and Systems",
+    "area": "Systems",
+    "deadline": "2026-10-30T23:59:59-12:00",
+    "location": "TBA",
+    "website": "https://mlsys.org"
+  },
+  {
+    "name": "CVPR",
+    "fullName": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+    "area": "CV",
+    "deadline": "2026-11-21T23:59:59-12:00",
+    "location": "TBA",
+    "website": "https://cvpr.thecvf.com"
+  },
+  {
+    "name": "ICML",
+    "fullName": "International Conference on Machine Learning",
+    "area": "ML",
+    "deadline": "2027-01-29T23:59:59-12:00",
+    "location": "TBA",
+    "website": "https://icml.cc"
+  },
+  {
+    "name": "RSS",
+    "fullName": "Robotics: Science and Systems",
+    "area": "Robotics",
+    "deadline": "2027-01-30T23:59:59-12:00",
+    "location": "TBA",
+    "website": "https://roboticsconference.org"
+  },
+  {
+    "name": "ACL",
+    "fullName": "Annual Meeting of the Association for Computational Linguistics",
+    "area": "NLP",
+    "deadline": "2027-02-15T23:59:59-12:00",
+    "location": "TBA",
+    "website": "https://www.aclweb.org"
+  },
+  {
+    "name": "ICCV",
+    "fullName": "IEEE/CVF International Conference on Computer Vision",
+    "area": "CV",
+    "deadline": "2027-03-07T23:59:59-12:00",
+    "location": "TBA",
+    "website": "https://iccv.thecvf.com"
+  },
+  {
+    "name": "NeurIPS",
+    "fullName": "Conference on Neural Information Processing Systems",
+    "area": "ML",
+    "deadline": "2027-05-14T23:59:59-12:00",
+    "location": "TBA",
+    "website": "https://neurips.cc"
+  }
 ]

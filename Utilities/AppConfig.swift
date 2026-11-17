@@ -7,7 +7,10 @@ enum AppConfig {
     static let tasksCollection = "tasks"
     static let linksCollection = "links"
 
-    // Name of the bundled conference list (Resources/conferences.json)
+    // Online conference list (raw file in a public GitHub repo)
+    static let conferenceFeedURL = URL(string: "https://raw.githubusercontent.com/failuresoul/confpulse-data/main/conferences.json")!
+
+    // Offline copy bundled in the app (Resources/conferences.json)
     static let conferencesFile = "conferences"
 
     // A full PulseRing means the deadline is this many days away or more

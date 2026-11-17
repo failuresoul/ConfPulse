@@ -44,7 +44,15 @@ final class AuthViewModel: ObservableObject {
             }
 
             let user = AppUser(id: result.user.uid, username: name, email: cleanEmail, createdAt: .now)
-            try db.collection(AppConfig.usersCollection).document(user.id).setData(from: user)
+            do {
+                // Encode the struct like setData(from:) does, but await the server's answer
+                // so a failed write shows an error instead of failing silently
+                let data = try Firestore.Encoder().encode(user)
+                try await db.collection(AppConfig.usersCollection).document(user.id).setData(data)
+            } catch {
+                try? await result.user.delete()   // no profile saved → remove the half-made account
+                throw error
+            }
             currentUser = user
             isLoggedIn = true
         } catch {

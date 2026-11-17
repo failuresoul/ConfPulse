@@ -41,10 +41,8 @@ struct ConferenceRowView: View {
 
 #Preview {
     ConferenceRowView(conference: Conference(
-        id: "demo", name: "DEMO", fullName: "Demo Conference on Previews",
-        area: "Machine Learning", location: "Online",
+        name: "DEMO", fullName: "Demo Conference on Previews", area: "ML",
         deadline: .now.addingTimeInterval(3 * 86_400),
-        startDate: .now.addingTimeInterval(60 * 86_400),
-        website: "https://example.com"))
+        location: "Online", website: "https://example.com"))
     .padding()
 }

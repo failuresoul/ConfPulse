@@ -4,25 +4,46 @@ import Combine
 @MainActor
 final class ConferenceViewModel: ObservableObject {
     @Published private(set) var conferences: [Conference] = []
+    @Published private(set) var isLoading = false
+    @Published private(set) var errorMessage: String?
     @Published var searchText = ""
     @Published var showPast = false
-    @Published private(set) var errorMessage: String?
 
-    // Reads conferences.json from the app bundle once and sorts it by deadline
-    func load() {
-        guard conferences.isEmpty else { return }
-        guard let url = Bundle.main.url(forResource: AppConfig.conferencesFile, withExtension: "json") else {
-            errorMessage = "conferences.json is missing from the app bundle."
+    // Downloads the online feed; falls back to the bundled copy when that fails
+    func load() async {
+        isLoading = true
+        defer { isLoading = false }
+        do {
+            // Skip the phone's cache so an edit on GitHub shows up on refresh
+            let request = URLRequest(url: AppConfig.conferenceFeedURL, cachePolicy: .reloadIgnoringLocalCacheData)
+            let (data, response) = try await URLSession.shared.data(for: request)
+            guard (response as? HTTPURLResponse)?.statusCode == 200 else {
+                throw URLError(.badServerResponse)
+            }
+            conferences = try decode(data)
+            errorMessage = nil
+        } catch {
+            loadBundledCopy()
+        }
+    }
+
+    // Reads Resources/conferences.json from inside the app
+    private func loadBundledCopy() {
+        guard let url = Bundle.main.url(forResource: AppConfig.conferencesFile, withExtension: "json"),
+              let data = try? Data(contentsOf: url),
+              let saved = try? decode(data) else {
+            errorMessage = "Could not load conferences."
             return
         }
-        do {
-            let decoder = JSONDecoder()
-            decoder.dateDecodingStrategy = .iso8601
-            let data = try Data(contentsOf: url)
-            conferences = try decoder.decode([Conference].self, from: data).sorted { $0.deadline < $1.deadline }
-        } catch {
-            errorMessage = "Could not read conferences: \(error.localizedDescription)"
-        }
+        conferences = saved
+        errorMessage = "Offline – showing saved list"
+    }
+
+    // Turns JSON into conferences (ISO 8601 dates) sorted by deadline
+    private func decode(_ data: Data) throws -> [Conference] {
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        return try decoder.decode([Conference].self, from: data).sorted { $0.deadline < $1.deadline }
     }
 
     // Upcoming deadlines first (soonest on top), then closed ones when showPast is on

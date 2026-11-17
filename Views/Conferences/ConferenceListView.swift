@@ -8,7 +8,9 @@ struct ConferenceListView: View {
             ScrollView {
                 LazyVStack(spacing: 12) {
                     if let message = viewModel.errorMessage {
-                        Text(message).foregroundStyle(.red)
+                        Label(message, systemImage: "wifi.slash")
+                            .font(.footnote)
+                            .foregroundStyle(.orange)
                     }
                     ForEach(viewModel.filtered) { conference in
                         ConferenceRowView(conference: conference)
@@ -18,7 +20,7 @@ struct ConferenceListView: View {
             }
             .background(Color(.systemGroupedBackground))
             .navigationTitle("Conferences")
-            .searchable(text: $viewModel.searchText, prompt: "Name or research area")
+            .searchable(text: $viewModel.searchText, prompt: "Name or area (ML, CV, NLP…)")
             .toolbar {
                 Toggle(isOn: $viewModel.showPast) {
                     Label("Show closed", systemImage: "clock.arrow.circlepath")
@@ -26,11 +28,14 @@ struct ConferenceListView: View {
                 .toggleStyle(.button)
             }
             .overlay {
-                if viewModel.filtered.isEmpty && viewModel.errorMessage == nil {
+                if viewModel.isLoading && viewModel.conferences.isEmpty {
+                    ProgressView("Loading conferences…")
+                } else if viewModel.filtered.isEmpty && !viewModel.isLoading {
                     ContentUnavailableView.search
                 }
             }
-            .onAppear { viewModel.load() }
+            .refreshable { await viewModel.load() }
+            .task { await viewModel.load() }
         }
     }
 }
