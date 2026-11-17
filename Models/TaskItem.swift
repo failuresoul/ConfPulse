@@ -32,4 +32,13 @@ enum TaskStatus: String, Codable, CaseIterable {
         case .done: .green
         }
     }
+
+    // The following status (todo → doing → done), nil when already done
+    var next: TaskStatus? {
+        switch self {
+        case .todo: .doing
+        case .doing: .done
+        case .done: nil
+        }
+    }
 }

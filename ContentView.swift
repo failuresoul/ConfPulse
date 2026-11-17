@@ -1,11 +1,18 @@
 import SwiftUI
 
 struct ContentView: View {
-    var body: some View {
-        Text("Hello, World!")
-    }
-}
+    @EnvironmentObject private var auth: AuthViewModel
 
-#Preview {
-    ContentView()
+    var body: some View {
+        Group {
+            if !auth.isLoggedIn {
+                LoginView()
+            } else if auth.currentUser == nil {
+                ProgressView("Loading profile…")
+            } else {
+                MainTabView()
+            }
+        }
+        .animation(.default, value: auth.isLoggedIn)
+    }
 }
