@@ -39,7 +39,7 @@ struct TeamListView: View {
                 }
             }
             .refreshable { await reload() }
-            .task { await reload() }
+            .task(id: auth.currentUser?.id) { await reload() }
         }
     }
 

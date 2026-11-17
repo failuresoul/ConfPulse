@@ -33,7 +33,7 @@ struct LoginView: View {
                         Task { await auth.signIn(email: email, password: password) }
                     } label: {
                         Group {
-                            if auth.isLoading { ProgressView() } else { Text("Sign In") }
+                            if auth.isLoading { ProgressView() } else { Text("Log In") }
                         }
                         .frame(maxWidth: .infinity)
                     }
@@ -59,7 +59,7 @@ struct LoginView: View {
                 .foregroundStyle(Theme.pulse)
             Text("ConfPulse")
                 .font(.largeTitle.bold())
-            Text("Research Team & Conference Tracker")
+            Text("Never miss a deadline as a team")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
         }

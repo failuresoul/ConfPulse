@@ -24,15 +24,18 @@ struct ProfileView: View {
                         }
                         .frame(maxWidth: .infinity)
                         .cardStyle()
+                    } else {
+                        ProgressView("Loading profile…")
                     }
 
                     Button(role: .destructive) {
                         auth.signOut()
                     } label: {
-                        Label("Sign Out", systemImage: "rectangle.portrait.and.arrow.right")
+                        Label("Log out", systemImage: "rectangle.portrait.and.arrow.right")
                             .frame(maxWidth: .infinity)
                     }
-                    .buttonStyle(.bordered)
+                    .buttonStyle(.borderedProminent)
+                    .tint(.red)
                     .controlSize(.large)
                 }
                 .padding()
