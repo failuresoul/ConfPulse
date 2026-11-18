@@ -2,7 +2,7 @@ import SwiftUI
 
 struct AddMemberView: View {
     let team: Team
-    @ObservedObject var viewModel: TeamViewModel
+    @EnvironmentObject private var viewModel: TeamViewModel
     @Environment(\.dismiss) private var dismiss
     @State private var username = ""
     @State private var isSaving = false
@@ -15,7 +15,7 @@ struct AddMemberView: View {
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled()
                 } footer: {
-                    Text("Ask your teammate for the username they chose at sign-up.")
+                    Text("Ask your lab mate for the username they chose at sign-up.")
                 }
                 if let message = viewModel.errorMessage {
                     Text(message).foregroundStyle(.red)

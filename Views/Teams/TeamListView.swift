@@ -2,7 +2,7 @@ import SwiftUI
 
 struct TeamListView: View {
     @EnvironmentObject private var auth: AuthViewModel
-    @StateObject private var viewModel = TeamViewModel()
+    @EnvironmentObject private var viewModel: TeamViewModel
     @State private var showCreate = false
 
     var body: some View {
@@ -24,49 +24,45 @@ struct TeamListView: View {
             .background(Color(.systemGroupedBackground))
             .navigationTitle("Teams")
             .navigationDestination(for: Team.self) { team in
-                TeamDetailView(team: team, viewModel: viewModel)
+                TeamDetailView(team: team)
             }
             .toolbar {
                 Button { showCreate = true } label: { Image(systemName: "plus") }
             }
             .sheet(isPresented: $showCreate) {
-                CreateTeamView(viewModel: viewModel)
+                CreateTeamView()
             }
             .overlay {
-                if viewModel.teams.isEmpty && !viewModel.isLoading {
-                    ContentUnavailableView("No teams yet", systemImage: "person.3",
-                                           description: Text("Tap + to create a team, or ask a leader to add you."))
+                if viewModel.isLoading {
+                    ProgressView()
+                } else if viewModel.teams.isEmpty {
+                    ContentUnavailableView {
+                        Label("No teams yet", systemImage: "person.3")
+                    } description: {
+                        Text("Create one and invite your lab mates")
+                    }
                 }
             }
-            .refreshable { await reload() }
-            .task(id: auth.currentUser?.id) { await reload() }
         }
     }
 
-    // Fetches the teams of the signed-in user
-    private func reload() async {
-        await viewModel.loadTeams(for: auth.currentUser?.id ?? "")
-    }
-
-    // Card with the team name, member count and a Leader badge
+    // Card with the team name, member count and a crown when I lead the team
     private func teamCard(_ team: Team) -> some View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
-                Text(team.name)
-                    .font(.headline)
+                HStack(spacing: 6) {
+                    Text(team.name)
+                        .font(.headline)
+                    if team.leaderId == auth.currentUser?.id {
+                        Image(systemName: "crown.fill")
+                            .foregroundStyle(.yellow)
+                    }
+                }
                 Text(team.memberIds.count == 1 ? "1 member" : "\(team.memberIds.count) members")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
             Spacer()
-            if team.leaderId == auth.currentUser?.id {
-                Text("Leader")
-                    .font(.caption.bold())
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .foregroundStyle(Theme.pulse)
-                    .background(Theme.pulse.opacity(0.15), in: Capsule())
-            }
             Image(systemName: "chevron.right")
                 .foregroundStyle(.tertiary)
         }

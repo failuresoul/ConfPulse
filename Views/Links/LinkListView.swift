@@ -35,7 +35,6 @@ struct LinkListView: View {
                     }
             }
         }
-        .navigationTitle("Links")
         .toolbar {
             Button { showAdd = true } label: { Image(systemName: "plus") }
         }

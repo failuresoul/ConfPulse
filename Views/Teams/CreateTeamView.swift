@@ -2,15 +2,15 @@ import SwiftUI
 
 struct CreateTeamView: View {
     @EnvironmentObject private var auth: AuthViewModel
+    @EnvironmentObject private var viewModel: TeamViewModel
     @Environment(\.dismiss) private var dismiss
-    @ObservedObject var viewModel: TeamViewModel
     @State private var name = ""
     @State private var isSaving = false
 
     var body: some View {
         NavigationStack {
             Form {
-                TextField("Team name", text: $name)
+                TextField("Team name, e.g. Vision Lab", text: $name)
                 if let message = viewModel.errorMessage {
                     Text(message).foregroundStyle(.red)
                 }
@@ -30,11 +30,11 @@ struct CreateTeamView: View {
         }
     }
 
-    // Saves the team with the current user as leader, then closes the sheet
+    // Saves the team with me as leader, then closes the sheet
     private func create() async {
-        guard let user = auth.currentUser else { return }
+        guard let me = auth.currentUser else { return }
         isSaving = true
-        let saved = await viewModel.createTeam(name: name, leader: user)
+        let saved = await viewModel.createTeam(name: name, me: me)
         isSaving = false
         if saved { dismiss() }
     }

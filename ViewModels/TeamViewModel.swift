@@ -9,44 +9,59 @@ final class TeamViewModel: ObservableObject {
     @Published var errorMessage: String?
 
     private let db = Firestore.firestore()
-    private var userId = ""
+    private var listener: ListenerRegistration?
 
     // Reference to the top-level teams collection
     private var teamsRef: CollectionReference {
         db.collection(AppConfig.teamsCollection)
     }
 
-    // Loads every team the user is a member of, newest first
-    func loadTeams(for uid: String) async {
-        guard !uid.isEmpty else { return }
-        userId = uid
+    // Listens live to every team whose memberIds contains uid
+    func start(uid: String) {
+        stop()
         isLoading = true
-        defer { isLoading = false }
-        do {
-            let snapshot = try await teamsRef.whereField("memberIds", arrayContains: uid).getDocuments()
-            teams = snapshot.documents
-                .compactMap { try? $0.data(as: Team.self) }
-                .sorted { $0.createdAt > $1.createdAt }
-        } catch {
-            errorMessage = error.localizedDescription
-        }
+        listener = teamsRef
+            .whereField("memberIds", arrayContains: uid)
+            .addSnapshotListener { [weak self] snapshot, error in
+                let teams = snapshot?.documents.compactMap { try? $0.data(as: Team.self) } ?? []
+                let message = error?.localizedDescription
+                Task { @MainActor in
+                    self?.apply(teams: teams, error: message)
+                }
+            }
     }
 
-    // Creates a team with the given user as leader and first member
-    func createTeam(name: String, leader: AppUser) async -> Bool {
+    // Removes the listener and clears the list (called on log out)
+    func stop() {
+        listener?.remove()
+        listener = nil
+        teams = []
+    }
+
+    // Stores the newest snapshot from the listener, newest team first
+    private func apply(teams: [Team], error: String?) {
+        isLoading = false
+        if let error {
+            errorMessage = error
+            return
+        }
+        self.teams = teams.sorted { $0.createdAt > $1.createdAt }
+    }
+
+    // Saves a new team with me as leader and only member
+    func createTeam(name: String, me: AppUser) async -> Bool {
         let cleanName = name.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !cleanName.isEmpty else {
             errorMessage = "Please enter a team name."
             return false
         }
-        let team = Team(id: nil, name: cleanName, leaderId: leader.id,
-                        memberIds: [leader.id], memberNames: [leader.id: leader.username],
+        let team = Team(id: nil, name: cleanName, leaderId: me.id,
+                        memberIds: [me.id], memberNames: [me.id: me.username],
                         createdAt: .now)
         do {
             let data = try Firestore.Encoder().encode(team)
             _ = try await teamsRef.addDocument(data: data)
-            await loadTeams(for: leader.id)
-            return true
+            return true   // the listener adds it to the list
         } catch {
             errorMessage = error.localizedDescription
             return false
@@ -74,7 +89,6 @@ final class TeamViewModel: ObservableObject {
                 "memberIds": FieldValue.arrayUnion([user.id]),
                 "memberNames.\(user.id)": user.username
             ])
-            await loadTeams(for: userId)
             return true
         } catch {
             errorMessage = error.localizedDescription
@@ -90,7 +104,6 @@ final class TeamViewModel: ObservableObject {
                 "memberIds": FieldValue.arrayRemove([uid]),
                 "memberNames.\(uid)": FieldValue.delete()
             ])
-            await loadTeams(for: userId)
         } catch {
             errorMessage = error.localizedDescription
         }

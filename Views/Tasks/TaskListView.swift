@@ -42,7 +42,6 @@ struct TaskListView: View {
                 }
             }
         }
-        .navigationTitle("Tasks")
         .toolbar {
             Button { showAdd = true } label: { Image(systemName: "plus") }
         }
