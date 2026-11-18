@@ -68,23 +68,40 @@ final class TeamViewModel: ObservableObject {
         }
     }
 
-    // Looks up a user by username and adds them to the team
-    func addMember(username: String, to team: Team) async -> Bool {
-        guard let teamId = team.id else { return false }
+    // Finds a user by exact username (users where username == text, limit 1)
+    // and returns them only if they can join this team
+    func searchUser(username: String, for team: Team, myId: String) async -> AppUser? {
+        errorMessage = nil
         let name = username.trimmingCharacters(in: .whitespaces).lowercased()
+        guard !name.isEmpty else { return nil }
         do {
             let snapshot = try await db.collection(AppConfig.usersCollection)
                 .whereField("username", isEqualTo: name)
                 .limit(to: 1)
                 .getDocuments()
             guard let user = try snapshot.documents.first?.data(as: AppUser.self) else {
-                errorMessage = "No user with the username \"\(name)\"."
-                return false
+                errorMessage = "No user found"
+                return nil
             }
-            guard !team.memberIds.contains(user.id) else {
-                errorMessage = "\(name) is already in this team."
-                return false
+            if user.id == myId {
+                errorMessage = "That's you"
+                return nil
             }
+            if team.memberIds.contains(user.id) {
+                errorMessage = "Already in this team"
+                return nil
+            }
+            return user
+        } catch {
+            errorMessage = error.localizedDescription
+            return nil
+        }
+    }
+
+    // Adds a user: uid into memberIds, username into memberNames.<uid>
+    func addMember(_ user: AppUser, to team: Team) async -> Bool {
+        guard let teamId = team.id else { return false }
+        do {
             try await teamsRef.document(teamId).updateData([
                 "memberIds": FieldValue.arrayUnion([user.id]),
                 "memberNames.\(user.id)": user.username
