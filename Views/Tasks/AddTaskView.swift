@@ -21,8 +21,9 @@ struct AddTaskView: View {
                 }
                 Section("Assignment") {
                     Picker("Assign to", selection: $assignee) {
-                        ForEach(team.memberIds, id: \.self) { uid in
-                            Text("@\(team.memberNames[uid] ?? "unknown")").tag(uid)
+                        // member.key is the uid, member.value is the username
+                        ForEach(team.memberNames.sorted { $0.value < $1.value }, id: \.key) { member in
+                            Text("@\(member.value)").tag(member.key)
                         }
                     }
                     DatePicker("Due", selection: $dueDate, in: Date.now..., displayedComponents: [.date, .hourAndMinute])

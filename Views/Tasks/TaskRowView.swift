@@ -8,48 +8,37 @@ struct TaskRowView: View {
         task.status != .done && task.dueDate < .now
     }
 
-    // Due date, with "Overdue" added when it has passed
-    private var dueText: String {
-        let date = task.dueDate.formatted(date: .abbreviated, time: .omitted)
-        return isOverdue ? "\(date) · Overdue" : date
-    }
-
     var body: some View {
-        HStack(alignment: .top, spacing: 12) {
-            Circle()
-                .fill(task.status.color)
-                .frame(width: 10, height: 10)
-                .padding(.top, 6)
-
+        HStack {
             VStack(alignment: .leading, spacing: 4) {
                 Text(task.title)
                     .font(.headline)
                     .strikethrough(task.status == .done)
-                if !task.details.isEmpty {
-                    Text(task.details)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(2)
-                }
-                HStack {
-                    Label("@\(task.assignedToName)", systemImage: "person")
-                        .foregroundStyle(.secondary)
-                    Spacer()
-                    Label(dueText, systemImage: "calendar")
-                        .foregroundStyle(isOverdue ? Color.red : Color.secondary)
-                }
-                .font(.caption)
+                Label(task.dueDate.formatted(date: .abbreviated, time: .shortened), systemImage: "calendar")
+                    .font(.caption)
+                    .foregroundStyle(isOverdue ? Color.red : Color.secondary)
             }
+            Spacer()
+            Text(task.status.title)
+                .font(.caption.bold())
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .foregroundStyle(task.status.color)
+                .background(task.status.color.opacity(0.15), in: Capsule())
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, 2)
     }
 }
 
 #Preview {
     List {
         TaskRowView(task: TaskItem(
-            id: nil, title: "Write related work", details: "Cover the last three years of papers.",
+            id: nil, title: "Write related work", details: "",
             assignedTo: "u1", assignedToName: "alice", status: .doing,
             dueDate: .now.addingTimeInterval(3 * 86_400), createdAt: .now))
+        TaskRowView(task: TaskItem(
+            id: nil, title: "Run baselines", details: "",
+            assignedTo: "u2", assignedToName: "bob", status: .todo,
+            dueDate: .now.addingTimeInterval(-86_400), createdAt: .now))
     }
 }

@@ -35,7 +35,7 @@ struct TeamDetailView: View {
             .padding()
 
             switch segment {
-            case .tasks: TaskListView(team: current)
+            case .tasks: TaskListView(team: current, myUid: auth.currentUser?.id ?? "")
             case .links: LinkListView(team: current)
             case .members: membersList
             }
