@@ -14,6 +14,10 @@ struct TaskListView: View {
 
     var body: some View {
         List {
+            if !viewModel.tasks.isEmpty {
+                pulseHeader
+            }
+
             if let message = viewModel.errorMessage {
                 Text(message).foregroundStyle(.red)
             }
@@ -28,7 +32,7 @@ struct TaskListView: View {
                     }
                 }
             } else {
-                Section("My tasks") {
+                Section("My Tasks") {
                     ForEach(viewModel.tasks) { task in
                         row(task)
                     }
@@ -54,23 +58,46 @@ struct TaskListView: View {
         .onDisappear { viewModel.stop() }
     }
 
-    // One task row: leader swipes left to delete, swipe right moves the status forward
+    // "Team Pulse" ring with how many tasks are done
+    private var pulseHeader: some View {
+        HStack(spacing: 16) {
+            PulseRing(progress: viewModel.progress)
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Team Pulse")
+                    .font(.headline)
+                Text("\(viewModel.doneCount) of \(viewModel.tasks.count) tasks done")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .padding(.vertical, 6)
+    }
+
+    // One task row: tap the chip to cycle, swipe right to Start/Done, leader swipes left to delete
     private func row(_ task: TaskItem) -> some View {
-        TaskRowView(task: task)
-            .swipeActions(edge: .trailing) {
-                if viewModel.isLeader {
-                    Button("Delete", role: .destructive) {
-                        Task { await viewModel.delete(task) }
-                    }
+        TaskRowView(task: task) {
+            Task { await viewModel.cycleStatus(task) }
+        }
+        .swipeActions(edge: .leading) {
+            if task.status == .todo {
+                Button("Start") {
+                    Task { await viewModel.updateStatus(task, to: .doing) }
+                }
+                .tint(TaskStatus.doing.color)
+            }
+            if task.status != .done {
+                Button("Done") {
+                    Task { await viewModel.updateStatus(task, to: .done) }
+                }
+                .tint(TaskStatus.done.color)
+            }
+        }
+        .swipeActions(edge: .trailing) {
+            if viewModel.isLeader {
+                Button("Delete", role: .destructive) {
+                    Task { await viewModel.delete(task) }
                 }
             }
-            .swipeActions(edge: .leading) {
-                if let next = task.status.next {
-                    Button(next.title) {
-                        Task { await viewModel.updateStatus(task, to: next) }
-                    }
-                    .tint(next.color)
-                }
-            }
+        }
     }
 }

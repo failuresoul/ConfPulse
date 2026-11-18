@@ -33,12 +33,10 @@ enum TaskStatus: String, Codable, CaseIterable {
         }
     }
 
-    // The following status (todo → doing → done), nil when already done
-    var next: TaskStatus? {
-        switch self {
-        case .todo: .doing
-        case .doing: .done
-        case .done: nil
-        }
+    // The next status in allCases order; done wraps back to todo
+    var cycled: TaskStatus {
+        let all = TaskStatus.allCases
+        let index = all.firstIndex(of: self) ?? 0
+        return all[(index + 1) % all.count]
     }
 }

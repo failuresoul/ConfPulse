@@ -2,6 +2,7 @@ import SwiftUI
 
 struct TaskRowView: View {
     let task: TaskItem
+    var onStatusTap: () -> Void = {}
 
     // True when the task is not done and its due date has passed
     private var isOverdue: Bool {
@@ -19,12 +20,16 @@ struct TaskRowView: View {
                     .foregroundStyle(isOverdue ? Color.red : Color.secondary)
             }
             Spacer()
-            Text(task.status.title)
-                .font(.caption.bold())
-                .padding(.horizontal, 8)
-                .padding(.vertical, 4)
-                .foregroundStyle(task.status.color)
-                .background(task.status.color.opacity(0.15), in: Capsule())
+            // Tap the chip to cycle the status
+            Button(action: onStatusTap) {
+                Text(task.status.title)
+                    .font(.caption.bold())
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .foregroundStyle(task.status.color)
+                    .background(task.status.color.opacity(0.15), in: Capsule())
+            }
+            .buttonStyle(.borderless)
         }
         .padding(.vertical, 2)
     }

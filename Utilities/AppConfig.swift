@@ -13,10 +13,7 @@ enum AppConfig {
     // Offline copy bundled in the app (Resources/conferences.json)
     static let conferencesFile = "conferences"
 
-    // A full PulseRing means the deadline is this many days away or more
-    static let countdownWindowDays = 90.0
-
-    // Deadlines closer than this are red (and the ring pulses)
+    // Deadlines closer than this are red
     static let urgentDays = 7
 
     // Deadlines closer than this are orange

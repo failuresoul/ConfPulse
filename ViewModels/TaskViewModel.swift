@@ -96,7 +96,22 @@ final class TaskViewModel: ObservableObject {
         }
     }
 
-    // Changes the status of one task
+    // Number of visible tasks that are done
+    var doneCount: Int {
+        tasks.filter { $0.status == .done }.count
+    }
+
+    // Share of visible tasks that are done (leader: whole team, member: own tasks)
+    var progress: Double {
+        tasks.isEmpty ? 0 : Double(doneCount) / Double(tasks.count)
+    }
+
+    // Moves a task to the next status: todo → doing → done → todo
+    func cycleStatus(_ task: TaskItem) async {
+        await updateStatus(task, to: task.status.cycled)
+    }
+
+    // Saves a new status with updateData(["status": ...])
     func updateStatus(_ task: TaskItem, to status: TaskStatus) async {
         guard let id = task.id else { return }
         do {
