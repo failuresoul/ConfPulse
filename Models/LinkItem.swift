@@ -18,8 +18,8 @@ enum LinkType: String, Codable, CaseIterable {
     var symbol: String {
         switch self {
         case .paper: "doc.text"
-        case .blog: "text.bubble"
-        case .overleaf: "leaf"
+        case .blog: "text.book.closed"
+        case .overleaf: "function"
         case .other: "link"
         }
     }

@@ -51,7 +51,7 @@ struct AddLinkView: View {
     private func save() async {
         guard let user = auth.currentUser else { return }
         isSaving = true
-        let saved = await viewModel.add(title: title, url: url, type: type, by: user)
+        let saved = await viewModel.addLink(title: title, url: url, type: type, me: user)
         isSaving = false
         if saved { dismiss() }
     }
