@@ -16,6 +16,9 @@ enum AppConfig {
     // A full PulseRing means the deadline is this many days away or more
     static let countdownWindowDays = 90.0
 
-    // Deadlines closer than this are shown in red and the ring pulses
+    // Deadlines closer than this are red (and the ring pulses)
     static let urgentDays = 7
+
+    // Deadlines closer than this are orange
+    static let warningDays = 30
 }

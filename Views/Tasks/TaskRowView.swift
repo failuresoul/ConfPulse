@@ -8,11 +8,10 @@ struct TaskRowView: View {
         task.status != .done && task.dueDate < .now
     }
 
-    // Due date plus time left, e.g. "Mar 3, 2027 · 4d 2h"
+    // Due date, with "Overdue" added when it has passed
     private var dueText: String {
         let date = task.dueDate.formatted(date: .abbreviated, time: .omitted)
-        if task.status == .done { return date }
-        return isOverdue ? "\(date) · Overdue" : "\(date) · \(Countdown(to: task.dueDate).shortText)"
+        return isOverdue ? "\(date) · Overdue" : date
     }
 
     var body: some View {

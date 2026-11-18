@@ -7,7 +7,8 @@ final class ConferenceViewModel: ObservableObject {
     @Published private(set) var isLoading = false
     @Published private(set) var errorMessage: String?
     @Published var searchText = ""
-    @Published var showPast = false
+    @Published var selectedArea: String?   // nil means "All"
+    @Published var hideClosed = true
 
     // Downloads the online feed; falls back to the bundled copy when that fails
     func load() async {
@@ -46,19 +47,24 @@ final class ConferenceViewModel: ObservableObject {
         return try decoder.decode([Conference].self, from: data).sorted { $0.deadline < $1.deadline }
     }
 
-    // Upcoming deadlines first (soonest on top), then closed ones when showPast is on
-    var filtered: [Conference] {
-        let matches = conferences.filter(matchesSearch)
-        let upcoming = matches.filter { $0.deadline > .now }
-        guard showPast else { return upcoming }
-        let closed = matches.filter { $0.deadline <= .now }.reversed()
-        return upcoming + closed
+    // Every area in the feed once, alphabetically, for the segmented picker
+    var areas: [String] {
+        Array(Set(conferences.map(\.area))).sorted()
     }
 
-    // True when the name, full name or area contains the search text
+    // Open deadlines first (soonest on top), then closed ones unless hideClosed is on
+    var filtered: [Conference] {
+        let matches = conferences.filter { matchesSearch($0) && (selectedArea == nil || $0.area == selectedArea) }
+        let open = matches.filter { $0.deadline > .now }
+        guard !hideClosed else { return open }
+        let closed = matches.filter { $0.deadline <= .now }.reversed()
+        return open + closed
+    }
+
+    // True when the short or full name contains the search text
     private func matchesSearch(_ conference: Conference) -> Bool {
         guard !searchText.isEmpty else { return true }
-        return [conference.name, conference.fullName, conference.area]
-            .contains { $0.localizedCaseInsensitiveContains(searchText) }
+        return conference.name.localizedCaseInsensitiveContains(searchText)
+            || conference.fullName.localizedCaseInsensitiveContains(searchText)
     }
 }
